@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alessandro Miranda | Automações & IA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; background-color: #050505; color: #ffffff; overflow-x: hidden; }
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .glass:hover {
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(59, 130, 246, 0.5);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.2);
+        }
+        .neon-text {
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal.active { display: flex; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="fixed top-0 left-0 w-full h-full -z-10">
+        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-900/20 rounded-full blur-[120px]"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-900/20 rounded-full blur-[120px]"></div>
+    </div>
+
+    <div class="max-w-5xl mx-auto px-6 py-12">
+        
+        <header class="flex flex-col items-center text-center gap-10 mb-24 mt-10">
+            <div class="relative">
+                <div class="absolute inset-0 bg-blue-500 rounded-full blur-2xl opacity-20 animate-pulse"></div>
+                <img src="minha-foto.jpg" alt="Alessandro Miranda" class="relative w-48 h-48 md:w-56 md:h-56 rounded-full object-cover object-top border-2 border-blue-500/30 shadow-2xl mx-auto">
+            </div>
+            
+            <div class="w-full">
+                <h2 class="text-blue-400 font-semibold tracking-widest uppercase text-sm mb-2">Estrategista em Automação</h2>
+                <h1 class="text-4xl md:text-6xl font-extrabold mb-4 tracking-tight leading-tight">
+                    <span class="text-white">Alessandro Miranda</span><br>
+                    <span class="neon-text">Sistemas Inteligentes</span>
+                </h1>
+                <p class="text-gray-400 text-lg md:text-xl leading-relaxed mb-8 max-w-3xl mx-auto">
+                    Transformo processos manuais em máquinas de eficiência. Ajudo empresas a escalarem através de automações customizadas e IA. Menos trabalho operacional, mais inteligência estratégica.
+                </p>
+                
+                <div class="flex justify-center">
+                    <a href="https://api.whatsapp.com/send?phone=5551999350868&text=Olá%20Alessandro,%20estou%20vendo%20seus%20casos%20reais%20e%20quero%20uma%20consultoria!" 
+                       target="_blank" 
+                       class="inline-block bg-blue-600 hover:bg-blue-500 text-white px-10 py-4 rounded-full font-bold transition shadow-[0_0_20px_rgba(59,130,246,0.4)]">
+                        Fale comigo pelo WhatsApp
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <section id="solucoes" class="mb-20">
+            <h3 class="text-center text-gray-500 uppercase tracking-widest text-sm mb-12 font-semibold">Portfólio de Automações</h3>
+            <div class="grid md:grid-cols-3 gap-8">
+                
+                <div onclick="openModal('modal-crm')" class="glass p-8 rounded-3xl cursor-pointer group">
+                    <div class="text-4xl mb-6 group-hover:scale-110 transition-transform text-center">⚙️</div>
+                    <h4 class="text-xl font-bold mb-3 text-blue-400 text-center">Integração CRM</h4>
+                    <p class="text-gray-400 text-sm mb-6 leading-relaxed italic text-center">Construindo caso real: Automação de Leads com resposta em 5 segundos.</p>
+                    <div class="text-center"><span class="text-blue-500 font-bold text-xs uppercase italic">Ver Detalhes →</span></div>
+                </div>
+
+                <div onclick="openModal('modal-chat')" class="glass p-8 rounded-3xl cursor-pointer group">
+                    <div class="text-4xl mb-6 group-hover:scale-110 transition-transform text-center">💬</div>
+                    <h4 class="text-xl font-bold mb-3 text-purple-400 text-center">IA de Atendimento</h4>
+                    <p class="text-gray-400 text-sm mb-6 leading-relaxed italic text-center">Construindo caso real: Triagem Inteligente e Qualificação 24/7.</p>
+                    <div class="text-center"><span class="text-purple-500 font-bold text-xs uppercase italic">Ver Detalhes →</span></div>
+                </div>
+
+                <div onclick="openModal('modal-dados')" class="glass p-8 rounded-3xl cursor-pointer group">
+                    <div class="text-4xl mb-6 group-hover:scale-110 transition-transform text-center">📊</div>
+                    <h4 class="text-xl font-bold mb-3 text-cyan-400 text-center">Dashboards IA</h4>
+                    <p class="text-gray-400 text-sm mb-6 leading-relaxed italic text-center">Construindo caso real: Central de Decisão e Lucratividade Automática.</p>
+                    <div class="text-center"><span class="text-cyan-500 font-bold text-xs uppercase italic">Ver Detalhes →</span></div>
+                </div>
+
+            </div>
+        </section>
+
+        <footer class="text-center text-gray-600 text-sm border-t border-white/5 pt-10">
+            © 2026 Alessandro Miranda — Especialista em Automação
+        </footer>
+    </div>
+
+    <div id="modal-crm" class="modal" onclick="closeModal()">
+        <div class="bg-gray-900 p-8 rounded-3xl border border-blue-500/30 max-w-lg w-full shadow-2xl" onclick="event.stopPropagation()">
+            <h3 class="text-blue

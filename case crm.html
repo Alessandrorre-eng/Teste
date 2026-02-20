@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Case: Integração CRM | Alessandro Miranda</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --blue: #3b82f6;
+            --purple: #8b5cf6;
+            --red: #ef4444;
+            --green: #22c55e;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #050505;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .mono { font-family: 'Space Mono', monospace; }
+
+        .blob {
+            position: fixed; border-radius: 50%; pointer-events: none; z-index: 0; filter: blur(120px);
+        }
+        .blob-1 { top: -10%; left: -10%; width: 45%; height: 45%; background: rgba(59,130,246,0.12); }
+        .blob-2 { bottom: -10%; right: -10%; width: 45%; height: 45%; background: rgba(139,92,246,0.12); }
+
+        .neon       { background: linear-gradient(90deg, var(--blue), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .neon-green { background: linear-gradient(90deg, #22c55e, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .glass {
+            background: rgba(255,255,255,0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 24px;
+        }
+
+        .tag { display: inline-block; padding: 4px 14px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+        .tag-blue   { background: rgba(59,130,246,0.12); color: #60a5fa; border: 1px solid rgba(59,130,246,0.25); }
+        .tag-purple { background: rgba(139,92,246,0.12); color: #a78bfa; border: 1px solid rgba(139,92,246,0.25); }
+        .tag-orange { background: rgba(249,115,22,0.12); color: #fb923c; border: 1px solid rgba(249,115,22,0.25); }
+
+        .section-label {
+            font-size: 11px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase;
+            color: rgba(255,255,255,0.2); margin-bottom: 20px; display: flex; align-items: center; gap: 12px;
+        }
+        .section-label::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.06); }
+
+        .video-shell { background: #0a0a0f; border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; overflow: hidden; }
+        .video-bar { background: rgba(255,255,255,0.04); padding: 11px 16px; display: flex; align-items: center; gap: 7px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .dot-btn { width: 11px; height: 11px; border-radius: 50%; }
+
+        .video-placeholder {
+            position: relative; padding-bottom: 56.25%; cursor: pointer; overflow: hidden;
+            background: linear-gradient(135deg, #0a0a14 0%, #0d0d1e 100%);
+        }
+        .video-placeholder::before {
+            content: ''; position: absolute; inset: 0;
+            background:
+                repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255,255,255,0.015) 40px, rgba(255,255,255,0.015) 41px),
+                repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255,255,255,0.015) 40px, rgba(255,255,255,0.015) 41px);
+        }
+        .video-inner { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; }
+
+        .play-btn {
+            width: 64px; height: 64px; border-radius: 50%;
+            background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.35);
+            display: flex; align-items: center; justify-content: center; font-size: 22px; transition: all 0.3s;
+        }
+        .play-btn:hover { background: rgba(59,130,246,0.3); transform: scale(1.08); }
+        .play-btn.red { background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.35); }
+        .play-btn.red:hover { background: rgba(239,68,68,0.3); }
+
+        .img-placeholder {
+            background: #0a0a14; border: 1px dashed rgba(255,255,255,0.1); border-radius: 16px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+            padding: 36px 20px; text-align: center; transition: all 0.3s; cursor: pointer; min-height: 160px;
+        }
+        .img-placeholder:hover { border-color: rgba(59,130,246,0.35); background: rgba(59,130,246,0.04); }
+        .img-placeholder .ico { font-size: 26px; opacity: 0.4; }
+        .img-placeholder .lbl { font-size: 12px; color: rgba(255,255,255,0.3); font-weight: 600; }
+        .img-placeholder .sub { font-size: 11px; color: rgba(255,255,255,0.15); max-width: 200px; line-height: 1.5; }
+
+        .metric-card {
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 20px; padding: 28px 16px; text-align: center; transition: all 0.3s;
+        }
+        .metric-card:hover { border-color: rgba(59,130,246,0.35); background: rgba(59,130,246,0.06); transform: translateY(-5px); }
+        .metric-number { font-size: 3rem; font-weight: 800; line-height: 1; background: linear-gradient(135deg, var(--blue), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .strip { border-radius: 12px; padding: 14px 18px; display: flex; align-items: flex-start; gap: 12px; margin-bottom: 8px; transition: transform 0.2s; }
+        .strip:hover { transform: translateX(4px); }
+        .strip-red  { background: rgba(239,68,68,0.06);  border: 1px solid rgba(239,68,68,0.14);  }
+        .strip-blue { background: rgba(59,130,246,0.06); border: 1px solid rgba(59,130,246,0.14); }
+        .strip-emoji { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+        .strip-title { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+        .strip-desc  { font-size: 12px; color: rgba(255,255,255,0.4); line-height: 1.55; }
+
+        .tool-badge { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; font-size: 13px; font-weight: 600; transition: all 0.3s; }
+        .tool-badge:hover { border-color: rgba(139,92,246,0.35); background: rgba(139,92,246,0.07); }
+        .tool-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+
+        .phase { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 6px 14px; border-radius: 999px; margin-bottom: 16px; }
+        .phase-red   { background: rgba(239,68,68,0.1);  color: #f87171; border: 1px solid rgba(239,68,68,0.22);  }
+        .phase-blue  { background: rgba(59,130,246,0.1); color: #60a5fa; border: 1px solid rgba(59,130,246,0.22); }
+        .phase-green { background: rgba(34,197,94,0.1);  color: #4ade80;  border: 1px solid rgba(34,197,94,0.22);  }
+
+        .step-num { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, var(--blue), var(--purple)); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+
+        .back-btn { display: inline-flex; align-items: center; gap: 8px; color: rgba(255,255,255,0.3); font-size: 13px; font-weight: 600; text-decoration: none; transition: color 0.2s; }
+        .back-btn:hover { color: var(--blue); }
+
+        @keyframes fadeUp { from { opacity:0; transform:translateY(28px); } to { opacity:1; transform:translateY(0); } }
+        .fu { animation: fadeUp 0.65s ease both; }
+        .d1 { animation-delay: 0.05s; } .d2 { animation-delay: 0.15s; } .d3 { animation-delay: 0.25s; }
+
+        .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #050505; }
+        ::-webkit-scrollbar-thumb { background: rgba(59,130,246,0.3); border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+
+<div class="relative z-10 max-w-3xl mx-auto px-5 py-12">
+
+    <!-- Nav -->
+    <div class="fu d1 mb-14">
+        <a href="index.html" class="back-btn">← Voltar ao portfólio</a>
+    </div>
+
+    <!-- HEADER -->
+    <header class="mb-20">
+        <div class="fu d1 flex flex-wrap gap-2 mb-5">
+            <span class="tag tag-blue">Automação de Vendas</span>
+            <span class="tag tag-purple">Make · n8n · Pipedrive</span>
+            <span class="tag tag-orange">Imobiliária</span>
+        </div>
+        <h1 class="fu d2 text-4xl md:text-5xl font-extrabold leading-tight mb-5">
+            <span class="text-white">De 48 horas</span><br>
+            <span class="neon">para 5 segundos.</span>
+        </h1>
+        <p class="fu d3 text-gray-400 text-base md:text-lg leading-relaxed max-w-2xl">
+            Como automatizei o funil de captação de uma imobiliária — do lead entrando no portal até o corretor ser notificado — sem nenhuma intervenção manual.
+        </p>
+    </header>
+
+
+    <!-- ═══════════ FASE 1 — DOR ═══════════ -->
+    <section class="mb-20 reveal">
+        <div class="section-label">Fase 1 — O Problema</div>
+        <div class="phase phase-red">😤 Era assim antes</div>
+
+        <p class="text-gray-400 text-sm leading-relaxed mb-8">
+            A imobiliária recebia <strong class="text-white">40+ leads por dia</strong> espalhados em e-mails de portais diferentes. Cada um precisava ser copiado manualmente para o CRM. Enquanto isso demorava horas, o concorrente que respondia primeiro fechava o negócio.
+        </p>
+
+        <!-- Vídeo 1 — Problema -->
+        <div class="video-shell mb-3">
+            <div class="video-bar">
+                <div class="dot-btn" style="background:#ff5f57"></div>
+                <div class="dot-btn" style="background:#febc2e"></div>
+                <div class="dot-btn" style="background:#28c840"></div>
+                <span class="mono text-xs text-gray-600 ml-2">antes-da-automacao.mp4</span>
+                <span class="mono text-xs text-gray-700 ml-auto">~00:18</span>
+            </div>
+            <div class="video-placeholder">
+                <!-- ══ SUBSTITUA PELO SEU VÍDEO ══
+                <video controls style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+                    <source src="antes-da-automacao.mp4" type="video/mp4">
+                </video>
+                ══════════════════════════════ -->
+                <div class="video-inner">
+                    <div class="play-btn red">▶</div>
+                    <div style="text-align:center; padding: 0 20px">
+                        <p class="text-red-400 font-bold text-sm mb-2">📹 Vídeo 1 — O Problema (gravar ~18s)</p>
+                        <p class="text-gray-600 text-xs leading-relaxed">
+                            Grave sua tela mostrando: caixa de e-mail cheia de leads, processo de copiar e colar dados manualmente no CRM, tempo passando. Encene se necessário.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p class="mono text-gray-700 text-xs text-center mb-10">Substitua o placeholder pelo arquivo <strong class="text-gray-600">antes-da-automacao.mp4</strong></p>
+
+        <!-- 3 dores -->
+        <div class="space-y-2">
+            <div class="strip strip-red">
+                <div class="strip-emoji">⏱</div>
+                <div>
+                    <div class="strip-title text-red-400">Resposta lenta = lead perdido</div>
+                    <div class="strip-desc">Leads ficavam horas sem resposta. O concorrente que atendia primeiro levava o cliente.</div>
+                </div>
+            </div>
+            <div class="strip strip-red">
+                <div class="strip-emoji">📋</div>
+                <div>
+                    <div class="strip-title text-red-400">15 min por cadastro manual</div>
+                    <div class="strip-desc">Com 40+ leads/dia, eram mais de 10h semanais copiando dados de e-mail para o CRM.</div>
+                </div>
+            </div>
+            <div class="strip strip-red">
+                <div class="strip-emoji">🤷</div>
+                <div>
+                    <div class="strip-title text-red-400">Gestão no escuro</div>
+                    <div class="strip-desc">Quem recebeu o lead? O contato foi feito? Em que etapa está o cliente? Ninguém sabia.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ═══════════ FASE 2 — SOLUÇÃO ═══════════ -->
+    <section class="mb-20 reveal">
+        <div class="section-label">Fase 2 — A Solução</div>
+        <div class="phase phase-blue">⚙️ O fluxo que resolve</div>
+
+        <p class="text-gray-400 text-sm leading-relaxed mb-8">
+            Construí um fluxo no <strong class="text-white">Make + n8n</strong> que captura o lead no instante que ele entra, qualifica, cadastra no CRM e dispara o WhatsApp — tudo automático, em menos de 5 segundos.
+        </p>
+
+        <!-- Vídeo 2 — Solução -->
+        <div class="video-shell mb-3">
+            <div class="video-bar">
+                <div class="dot-btn" style="background:#ff5f57"></div>
+                <div class="dot-btn" style="background:#febc2e"></div>
+                <div class="dot-btn" style="background:#28c840"></div>
+                <span class="mono text-xs text-gray-600 ml-2">automacao-ao-vivo.mp4</span>
+                <span class="mono text-xs text-gray-700 ml-auto">~00:42</span>
+            </div>
+            <div class="video-placeholder">
+                <!-- ══ SUBSTITUA PELO SEU VÍDEO ══
+                <video controls style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+                    <source src="automacao-ao-vivo.mp4" type="video/mp4">
+                </video>
+                ══════════════════════════════ -->
+                <div class="video-inner">
+                    <div class="play-btn">▶</div>
+                    <div style="text-align:center; padding: 0 20px">
+                        <p class="text-blue-400 font-bold text-sm mb-2">📹 Vídeo 2 — A Solução rodando (gravar ~42s)</p>
+                        <p class="text-gray-600 text-xs leading-relaxed">
+                            Grave sua tela com 2 janelas lado a lado: formulário sendo enviado + Make executando. Depois mostre o resultado: lead no Pipedrive e WhatsApp entregue. Adicione legenda com os segundos.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p class="mono text-gray-700 text-xs text-center mb-10">Substitua o placeholder pelo arquivo <strong class="text-gray-600">automacao-ao-vivo.mp4</strong></p>
+
+        <!-- Passos do fluxo -->
+        <div class="glass p-6 mb-8">
+            <p class="text-xs text-gray-600 uppercase font-bold tracking-widest mb-6">O que acontece nos bastidores</p>
+            <div class="space-y-5">
+                <div class="flex items-start gap-4">
+                    <div class="step-num">1</div>
+                    <div><p class="font-semibold text-sm text-white">Lead chega no portal</p><p class="text-xs text-gray-500 mt-1">ZAP, OLX, Viva Real ou site próprio disparam um webhook automaticamente</p></div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="step-num">2</div>
+                    <div><p class="font-semibold text-sm text-white">n8n captura e trata os dados</p><p class="text-xs text-gray-500 mt-1">Nome, telefone, imóvel e origem são extraídos e formatados em milissegundos</p></div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="step-num">3</div>
+                    <div><p class="font-semibold text-sm text-white">Make qualifica e roteia</p><p class="text-xs text-gray-500 mt-1">Analisa região, faixa de preço e urgência. Define qual corretor vai receber o lead</p></div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="step-num">4</div>
+                    <div><p class="font-semibold text-sm text-white">Pipedrive atualizado automaticamente</p><p class="text-xs text-gray-500 mt-1">Lead criado com etapa, responsável e imóvel já preenchidos — zero digitação</p></div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="step-num">5</div>
+                    <div><p class="font-semibold text-sm text-white">WhatsApp enviado ao lead</p><p class="text-xs text-gray-500 mt-1">Mensagem personalizada com nome e interesse via Evolution API — em segundos</p></div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="step-num">6</div>
+                    <div><p class="font-semibold text-sm text-white">Corretor notificado</p><p class="text-xs text-gray-500 mt-1">Alerta no WhatsApp + tarefa criada no Pipedrive. Nenhum lead cai no vácuo</p></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stack -->
+        <p class="text-gray-600 uppercase text-xs font-bold tracking-widest mb-4">Ferramentas utilizadas</p>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <div class="tool-badge"><div class="tool-icon" style="background:rgba(255,102,0,0.12)">⚙️</div><div><div class="text-white text-sm">Make</div><div class="text-gray-600 text-xs">Orquestração</div></div></div>
+            <div class="tool-badge"><div class="tool-icon" style="background:rgba(59,130,246,0.12)">🔄</div><div><div class="text-white text-sm">n8n</div><div class="text-gray-600 text-xs">Webhooks</div></div></div>
+            <div class="tool-badge"><div class="tool-icon" style="background:rgba(139,92,246,0.12)">📊</div><div><div class="text-white text-sm">Pipedrive</div><div class="text-gray-600 text-xs">CRM</div></div></div>
+            <div class="tool-badge"><div class="tool-icon" style="background:rgba(34,197,94,0.12)">💬</div><div><div class="text-white text-sm">Evolution API</div><div class="text-gray-600 text-xs">WhatsApp</div></div></div>
+            <div class="tool-badge"><div class="tool-icon" style="background:rgba(249,115,22,0.12)">📋</div><div><div class="text-white text-sm">Google Sheets</div><div class="text-gray-600 text-xs">Logs</div></div></div>
+            <div class="tool-badge"><div class="tool-icon" style="background:rgba(6,182,212,0.12)">🔧</div><div><div class="text-white text-sm">Postman</div><div class="text-gray-600 text-xs">Testes</div></div></div>
+        </div>
+    </section>
+
+
+    <!-- ═══════════ FASE 3 — PROVA ═══════════ -->
+    <section class="mb-20 reveal">
+        <div class="section-label">Fase 3 — A Prova</div>
+        <div class="phase phase-green">✅ Resultados concretos</div>
+
+        <!-- Métricas -->
+        <div class="grid grid-cols-3 gap-4 mb-12">
+            <div class="metric-card">
+                <div class="metric-number">5<span style="font-size:1.3rem">s</span></div>
+                <div class="text-gray-500 text-xs mt-2 font-medium leading-tight">Tempo de<br>resposta ao lead</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-number">97<span style="font-size:1.1rem">%</span></div>
+                <div class="text-gray-500 text-xs mt-2 font-medium leading-tight">Redução de<br>trabalho manual</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-number">3<span style="font-size:1.3rem">x</span></div>
+                <div class="text-gray-500 text-xs mt-2 font-medium leading-tight">Aumento em<br>conversão</div>
+            </div>
+        </div>
+
+        <!-- Prints -->
+        <p class="text-gray-600 uppercase text-xs font-bold tracking-widest mb-4">Prints da automação rodando</p>
+        <div class="grid md:grid-cols-2 gap-4 mb-10">
+
+            <div>
+                <!-- SUBSTITUA PELO SEU PRINT: <img src="print-make.png" alt="Fluxo Make" style="width:100%;border-radius:14px"> -->
+                <div class="img-placeholder">
+                    <div class="ico">📸</div>
+                    <div class="lbl">Print 1 — Fluxo no Make</div>
+                    <div class="sub">Captura de tela do fluxo completo rodando com todos os módulos conectados</div>
+                </div>
+                <p class="mono text-gray-700 text-xs text-center mt-2">print-make-fluxo.png</p>
+            </div>
+
+            <div>
+                <!-- SUBSTITUA PELO SEU PRINT: <img src="print-pipedrive.png" alt="CRM" style="width:100%;border-radius:14px"> -->
+                <div class="img-placeholder">
+                    <div class="ico">📸</div>
+                    <div class="lbl">Print 2 — Lead no Pipedrive</div>
+                    <div class="sub">Lead criado automaticamente com todos os campos já preenchidos</div>
+                </div>
+                <p class="mono text-gray-700 text-xs text-center mt-2">print-pipedrive.png</p>
+            </div>
+
+            <div>
+                <!-- SUBSTITUA PELO SEU PRINT: <img src="print-whatsapp.png" alt="WhatsApp" style="width:100%;border-radius:14px"> -->
+                <div class="img-placeholder">
+                    <div class="ico">📸</div>
+                    <div class="lbl">Print 3 — WhatsApp enviado</div>
+                    <div class="sub">Mensagem personalizada entregue ao lead automaticamente em segundos</div>
+                </div>
+                <p class="mono text-gray-700 text-xs text-center mt-2">print-whatsapp.png</p>
+            </div>
+
+            <div>
+                <!-- SUBSTITUA PELO SEU PRINT: <img src="print-logs.png" alt="Logs" style="width:100%;border-radius:14px"> -->
+                <div class="img-placeholder">
+                    <div class="ico">📸</div>
+                    <div class="lbl">Print 4 — Log de execuções</div>
+                    <div class="sub">Google Sheets com histórico de todos os leads processados automaticamente</div>
+                </div>
+                <p class="mono text-gray-700 text-xs text-center mt-2">print-logs-sheets.png</p>
+            </div>
+
+        </div>
+
+        <!-- Antes x Depois -->
+        <div class="glass p-6">
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <p class="text-red-400 font-bold text-sm mb-4">❌ Antes</p>
+                    <div class="space-y-2">
+                        <div class="strip strip-red"><div class="strip-emoji">⏱</div><div class="strip-desc">Resposta em <strong class="text-red-400">2 a 48 horas</strong></div></div>
+                        <div class="strip strip-red"><div class="strip-emoji">📋</div><div class="strip-desc"><strong class="text-red-400">15 min</strong> por cadastro manual</div></div>
+                        <div class="strip strip-red"><div class="strip-emoji">🤷</div><div class="strip-desc"><strong class="text-red-400">Sem</strong> rastreabilidade</div></div>
+                        <div class="strip strip-red"><div class="strip-emoji">🕐</div><div class="strip-desc"><strong class="text-red-400">+10h/semana</strong> operacional</div></div>
+                    </div>
+                </div>
+                <div>
+                    <p class="text-blue-400 font-bold text-sm mb-4">✅ Depois</p>
+                    <div class="space-y-2">
+                        <div class="strip strip-blue"><div class="strip-emoji">⚡</div><div class="strip-desc">Resposta em <strong class="text-blue-400">menos de 5 segundos</strong></div></div>
+                        <div class="strip strip-blue"><div class="strip-emoji">🤖</div><div class="strip-desc"><strong class="text-blue-400">Zero</strong> trabalho manual</div></div>
+                        <div class="strip strip-blue"><div class="strip-emoji">📊</div><div class="strip-desc">Funil <strong class="text-blue-400">100% rastreável</strong></div></div>
+                        <div class="strip strip-blue"><div class="strip-emoji">🎯</div><div class="strip-desc">Corretores focam em <strong class="text-blue-400">vender</strong></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- CTA -->
+    <section class="reveal">
+        <div class="glass p-10 text-center" style="background:linear-gradient(135deg,rgba(59,130,246,0.07),rgba(139,92,246,0.07)); border-color:rgba(59,130,246,0.18);">
+            <p class="text-gray-500 text-xs uppercase tracking-widest font-semibold mb-3">Quer o mesmo no seu negócio?</p>
+            <h3 class="text-2xl font-extrabold text-white mb-3">Vamos automatizar<br>seu processo de vendas</h3>
+            <p class="text-gray-500 text-sm mb-8 max-w-sm mx-auto">Me conta o desafio e eu mostro como uma automação sob medida pode transformar sua operação.</p>
+            <a href="https://api.whatsapp.com/send?phone=5511999999999&text=Olá%20Alessandro,%20vi%20o%20case%20de%20CRM%20e%20quero%20uma%20consultoria!"
+               target="_blank"
+               class="inline-block bg-blue-600 hover:bg-blue-500 text-white px-10 py-4 rounded-full font-bold transition"
+               style="box-shadow:0 0 24px rgba(59,130,246,0.35)">
+                Quero uma consultoria gratuita →
+            </a>
+        </div>
+    </section>
+
+    <footer class="text-center text-gray-800 text-xs mt-16 pt-8 border-t border-white/5">
+        © 2026 Alessandro Miranda — Especialista em Automação
+    </footer>
+
+</div>
+
+<script>
+    const reveals = document.querySelectorAll('.reveal');
+    const obs = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+    }, { threshold: 0.1 });
+    reveals.forEach(r => obs.observe(r));
+</script>
+
+</body>
+</html>
